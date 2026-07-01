@@ -1,10 +1,46 @@
-# Mood
+# 🎭 Mood Recommender
 
 Tell us how you feel — get personalized music and movie recommendations.
 
 A mood-based recommendation system built with Flask, VADER sentiment analysis, and a modern glass-morphism UI.
 
-## Quick Start
+## ✨ Features
+
+### 🎯 Mood Detection
+Type how you feel or pick a quick mood chip — VADER analyzes your sentiment across 5 moods (Happy, Joyful, Neutral, Sad, Depressed)
+
+### 🎵 Music + 🎬 Movies
+**50 songs and 50 movies** — curated picks for every mood, each with working Spotify links and TMDB poster images
+
+### 🎥 YouTube Trailers
+One-click trailer search for every movie (cached per movie so it loads instantly on repeat visits)
+
+### 🎛️ Genre Filter
+Narrow your recommendations by genre after mood is detected
+
+### 📈 Mood History Chart
+Track your emotional trends over time with an interactive Chart.js bar chart
+
+### ⚡ Basic / Advanced Sentiment
+Switch between lightweight VADER (instant, no download) or HuggingFace Transformers (more accurate)
+
+### 🌙 Dark Mode
+Persistent theme toggle that remembers your preference
+
+### 📤 Share Results
+Copy your mood analysis to clipboard with one click
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|----------|--------------|
+| Backend | Flask, SQLAlchemy, SQLite |
+| Sentiment | VADER (NLTK) / distilBERT (Transformers) |
+| Frontend | Vanilla JS, Chart.js, CSS Custom Properties |
+| Design | Glass-morphism, mood-reactive gradients |
+| APIs | Spotify (direct links), TMDB (posters), YouTube (trailers) |
+
+## 🚀 Quick Start
 
 ```bash
 python -m venv venv
@@ -14,72 +50,48 @@ python app.py
 
 Open **http://localhost:5000**.
 
-The database (`database.db`) is auto-created on first run with 50 songs and 50 movies.
+The database (`database.db`) auto-creates on first run with all 100 seed entries.
 
-## Features
-
-- **Mood detection** — Type how you feel or pick a quick mood chip
-- **50 songs + 50 movies** — Recommendations across 5 moods (Happy, Joyful, Neutral, Sad, Depressed)
-- **Spotify links** — Every song links directly to Spotify
-- **Movie posters** — TMDB-powered poster images
-- **YouTube trailers** — One-click trailer search (cached per movie)
-- **Genre filter** — Narrow recommendations by genre
-- **Mood history chart** — Track emotional trends over time (Chart.js)
-- **Basic / Advanced sentiment** — Switch between VADER (instant) and HuggingFace Transformers
-- **Dark mode** — Persistent theme toggle
-- **Share results** — Copy mood analysis to clipboard
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 ├── app.py                 # Flask entry point
 ├── config.py              # Configuration
 ├── database/
-│   ├── __init__.py         # DB connection + 100 seed entries
-│   └── models.py           # Song, Movie, RecommendationHistory models
+│   ├── __init__.py         # DB connection + seed data
+│   └── models.py           # SQLAlchemy models
 ├── ml/
-│   ├── sentiment.py        # VADER sentiment analysis (default)
-│   ├── hf_sentiment.py     # HuggingFace Transformers engine (optional)
+│   ├── sentiment.py        # VADER (default)
+│   ├── hf_sentiment.py     # HuggingFace (optional)
 │   └── recommender.py      # Recommendation logic
 ├── routes/
 │   └── recommendation.py   # API endpoints
 ├── utils/
 │   └── youtube.py          # YouTube trailer search
 ├── static/
-│   ├── css/style.css       # Design system (glass-morphism, mood-reactive colors)
-│   └── js/main.js          # Frontend application
+│   ├── css/style.css       # Design system
+│   └── js/main.js          # Frontend app
 ├── templates/
 │   └── index.html          # Single-page app
-├── test_app.py             # 13 tests (pytest)
-├── pytest.ini              # Test configuration
+├── test_app.py             # 13 tests
+├── pytest.ini              # Test config
 ├── Dockerfile              # Production container
-├── docker-compose.yml      # Docker orchestration
-├── requirements.txt        # Python dependencies
+├── docker-compose.yml      # Docker setup
+├── requirements.txt        # Dependencies
 └── .env.example            # Environment template
 ```
 
-## API Endpoints
+## 📡 API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/analyze` | Analyze mood + get song/movie recommendations |
+| POST | `/api/analyze` | Analyze mood + get recommendations |
 | GET | `/api/mood-stats` | Available entries per mood |
-| GET | `/api/mood-history` | Historical mood data for chart |
-| GET | `/api/trailer/<id>` | Fetch/cache YouTube trailer for a movie |
+| GET | `/api/mood-history` | Historical data for chart |
+| GET | `/api/trailer/<id>` | Fetch/cache YouTube trailer |
 | GET | `/api/health` | Health check |
-| GET | `/api/example` | Example analysis response |
 
-### POST /api/analyze
-
-```json
-{ "text": "I feel amazing today!" }
-
-{ "text": "I feel amazing today!", "model": "huggingface" }
-```
-
-Returns mood, sentiment score, 5 songs with Spotify links, and 5 movies with poster URLs.
-
-## Advanced Sentiment
+## 🔬 Advanced Sentiment
 
 The app uses **VADER** by default (lightweight, instant, no download). To enable **HuggingFace Transformers**:
 
@@ -87,20 +99,16 @@ The app uses **VADER** by default (lightweight, instant, no download). To enable
 pip install transformers torch
 ```
 
-Toggle the "Advanced" switch in the UI. The model downloads on first use (~260 MB).
+Toggle the **Advanced** switch in the UI. Model downloads on first use (~260 MB).
 
-## Running Tests
+## 🧪 Running Tests
 
 ```bash
 pytest
 ```
 
-## Tech Stack
+All 13 tests pass — covering sentiment analysis, API endpoints, and end-to-end flow.
 
-Backend: Flask, SQLAlchemy, SQLite  
-Sentiment: VADER (NLTK) / distilBERT (Transformers)  
-Frontend: Vanilla JS, Chart.js, CSS custom properties
+## 📄 License
 
-## License
-
-MIT
+MIT License — see the [LICENSE](LICENSE) file for details.
