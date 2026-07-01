@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mood-Based Music and Movie Recommendation System">
+    <meta name="author" content="Vedant Karmankar">
+    <title>Mood Recommender</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=6">
+</head>
+<body>
+
+    <!-- Glass Navigation -->
+    <nav class="glass-nav">
+        <a class="nav-brand" href="/">
+            <i class="fas fa-wand-magic-sparkles"></i>
+            mood
+        </a>
+        <div class="nav-actions">
+            <button class="theme-btn" id="themeToggle" title="Toggle dark mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+
+        <!-- Hero -->
+        <section class="hero-section">
+            <div class="container">
+                <h1 class="display-heading">How are you feeling?</h1>
+                <p class="hero-sub">
+                    Tell us your mood — we'll find the perfect music and movies to match.
+                </p>
+            </div>
+        </section>
+
+        <!-- Input Section -->
+        <section class="py-3">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-xl-7">
+                        <div class="input-card">
+                            <form id="moodForm">
+                                <textarea
+                                    class="mood-textarea"
+                                    id="moodInput"
+                                    name="text"
+                                    placeholder="Example: I finally got my dream job today!"
+                                    rows="4"
+                                    maxlength="1000"
+                                    required
+                                ></textarea>
+                                <small class="char-count">
+                                    <span id="charCount">0</span>/1000
+                                </small>
+
+                                <!-- Quick Mood Chips -->
+                                <div class="mt-3">
+                                    <span class="mood-chips-label">Quick mood</span>
+                                    <div class="mood-chips-group">
+                                        <button type="button" class="chip chip-happy" data-text="I'm feeling absolutely amazing and full of energy today!">
+                                            <span>😄</span> Excited
+                                        </button>
+                                        <button type="button" class="chip chip-joyful" data-text="Things are going really well and I feel so cheerful right now!">
+                                            <span>😊</span> Happy
+                                        </button>
+                                        <button type="button" class="chip chip-neutral" data-text="I woke up and had breakfast and went about my usual routine today.">
+                                            <span>😐</span> Neutral
+                                        </button>
+                                        <button type="button" class="chip chip-sad" data-text="Had a pretty average day, kind of tired and a bit disappointed.">
+                                            <span>😢</span> Sad
+                                        </button>
+                                        <button type="button" class="chip chip-depressed" data-text="Everything is terrible and awful and I feel completely worthless.">
+                                            <span>😔</span> Depressed
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Model Toggle -->
+                                <div class="model-toggle-row">
+                                    <span class="model-label active" id="vaderLabel">Basic</span>
+                                    <label class="toggle-track">
+                                        <input type="checkbox" id="modelSwitch">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="model-label" id="hfLabel">Advanced</span>
+                                </div>
+
+                                <!-- Submit -->
+                                <div class="text-center mt-3">
+                                    <button type="submit" class="btn-primary-glow" id="analyzeBtn">
+                                        <span><i class="fas fa-sparkles"></i> Analyze my mood</span>
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Loading -->
+                            <div id="loadingAnimation" class="d-none">
+                                <div class="loading-ring">
+                                    <div class="ring"></div>
+                                    <div class="ring"></div>
+                                    <div class="ring"></div>
+                                </div>
+                                <p class="loading-text">Reading your mood...</p>
+                            </div>
+
+                            <!-- Error -->
+                            <div id="errorAlert" class="alert-glass d-none mt-3" role="alert">
+                                <i class="fas fa-circle-exclamation"></i>
+                                <span id="errorMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section (Hidden Initially) -->
+        <section id="resultsSection" class="results-section py-4 d-none">
+            <div class="container">
+                <div class="row justify-content-center mb-4">
+                    <div class="col-lg-8 col-xl-7">
+                        <!-- Mood Card -->
+                        <div class="mood-result" id="moodCard">
+                            <div class="card-body">
+                                <span class="mood-emoji" id="moodEmoji">😐</span>
+                                <h2 class="mood-title" id="moodTitle">Neutral</h2>
+                                <p class="mood-desc" id="moodDescription">Your current mood</p>
+                                <span class="model-badge" id="modelBadge">VADER</span>
+                                <div class="mood-stats">
+                                    <div>
+                                        <div class="stat-label">Sentiment</div>
+                                        <div class="stat-number" id="sentimentScore">0.00</div>
+                                    </div>
+                                    <div>
+                                        <div class="stat-label">Confidence</div>
+                                        <div class="stat-number" id="confidence">0%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommendations Glass Container -->
+                <div class="results-glass">
+                    <div class="row">
+                        <!-- Songs -->
+                        <div class="col-lg-6 mb-4 mb-lg-0">
+                            <div class="section-divider">
+                                <i class="fas fa-music"></i>
+                                <h3>Songs</h3>
+                            </div>
+                            <div id="songsFilterBar"></div>
+                            <div id="songsContainer" class="row g-2"></div>
+                        </div>
+
+                        <!-- Movies -->
+                        <div class="col-lg-6">
+                            <div class="section-divider">
+                                <i class="fas fa-film"></i>
+                                <h3>Movies</h3>
+                            </div>
+                            <div id="moviesFilterBar"></div>
+                            <div id="moviesContainer" class="row g-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-row">
+                        <button class="btn-primary-glow" id="searchAgainBtn">
+                            <span><i class="fas fa-rotate"></i> Search again</span>
+                        </button>
+                        <button class="btn-outline" id="shareResultsBtn">
+                            <i class="fas fa-share-nodes"></i> Share results
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mood History -->
+                <div class="row mt-4" id="historySection">
+                    <div class="col-12 col-lg-8 mx-auto">
+                        <div class="history-card">
+                            <div class="history-header">
+                                <h4><i class="fas fa-chart-line"></i>Your mood history</h4>
+                                <small id="historyCount">No entries yet</small>
+                            </div>
+                            <div class="chart-wrap">
+                                <canvas id="moodChart"></canvas>
+                            </div>
+                            <p class="chart-caption">Your mood trends over time</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Mood Recommender — <strong>Vedant Karmankar</strong></p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}?v=6"></script>
+</body>
+</html>
