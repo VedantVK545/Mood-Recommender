@@ -1,4 +1,4 @@
-# mood
+# Mood
 
 Tell us how you feel — get personalized music and movie recommendations.
 
