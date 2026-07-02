@@ -45,16 +45,22 @@ def analyze():
     """
     try:
         # Get request data
-        data = request.get_json()
-        
-        if not data or 'text' not in data:
+        data = request.get_json(silent=True)
+
+        if not isinstance(data, dict) or 'text' not in data:
             return jsonify({
                 'success': False,
                 'error': 'Missing "text" field in request'
             }), 400
-        
+
+        if not isinstance(data['text'], str):
+            return jsonify({
+                'success': False,
+                'error': 'Text must be a string'
+            }), 400
+
         user_text = data['text'].strip()
-        
+
         if not user_text:
             return jsonify({
                 'success': False,
